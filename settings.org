@@ -74,61 +74,11 @@ replacing tab with space
 * installed packages
 ** ido describe binding
 
-;;** ido grid mode
-;;#+BEGIN_SRC emacs-lisp
-;;(ido-grid-mode 1)
-;;#+END_SRC
-
 ** org bullets
 #+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
-
-;;** ivy + swiper + counsel 
-;;
-;;*** description
-;;    github repo : https://github.com/abo-abo/swiper
-;;    ivy + swiper + counsel in an alternative for isearch, M-x, switech buffer etc.
-;;
-;;    find-file is not bound to counsel-find-file. That behaviour is
-;;    kept to ido-find-file. Reason for that is, search & find
-;;    capability of ido-find-file. e.g. say you type: '.org';
-;;    counsel-find-file will search .org file within the dir but
-;;    ido-find-file will search the database for the same. Similar
-;;    action can be obtained by counsel-locate. I like the ido feature
-;;    of finding file with search if not found in the dir.
-;;
-;;*** codes
-;;#+BEGIN_SRC emacs-lisp
-;;(ivy-mode 1)
-;;(setq ivy-use-virtual-buffers t)
-;;(setq enable-recursive-minibuffers t)
-;;(global-set-key "\C-s" 'swiper)
-;;(global-set-key (kbd "C-c C-r") 'ivy-resume)
-;;(global-set-key (kbd "<f6>") 'ivy-resume)
-;;(global-set-key (kbd "M-x") 'counsel-M-x)
-;;;(global-set-key (kbd "C-x C-f") 'counsel-find-file) ;;; keep IDO mode for find file
-;;(global-set-key (kbd "C-y") 'counsel-yank-pop)
-;;(global-set-key (kbd "<f1> f") 'counsel-describe-function)
-;;(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-;;(global-set-key (kbd "<f1> l") 'counsel-find-library)
-;;(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-;;(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-;;(global-set-key (kbd "C-c g") 'counsel-git)
-;;(global-set-key (kbd "C-c j") 'counsel-git-grep)
-;;(global-set-key (kbd "C-c k") 'counsel-ag)
-;;(global-set-key (kbd "C-x l") 'counsel-locate)
-;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-;;(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-;;
-;;#+END_SRC
-;;
-;;** magit
-;;
-;;#+BEGIN_SRC emacs-lisp
-;;(require 'magit)
-;;#+END_SRC
 
 ** helm
 *** description
