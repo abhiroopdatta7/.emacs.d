@@ -136,9 +136,8 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 *** codes
 #+BEGIN_SRC emacs-lisp
 (require 'p4)
-(p4-set-client-name "a7-miata")
-(p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
-;(p4-set-p4-port "ssl:uscal-cm-p4-1:1666")
+(p4-set-client-name "your-user")
+(p4-set-p4-port "your-port")
 ;; -diff
 (defun command-line-diff (switch)
   (let ((file1 (pop command-line-args-left))
