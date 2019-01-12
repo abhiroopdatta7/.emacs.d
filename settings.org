@@ -203,14 +203,6 @@ https://www.emacswiki.org/emacs/Iedit
 
 #+END_SRC
 
-* themes
-;;** exotica
-;;Vibrant colored dark theme.
-;;
-;;#+BEGIN_SRC emacs-lisp
-;;(load-theme 'exotica t)
-;;#+END_SRC
-
 * Back to Basic
 ** key combo
 
