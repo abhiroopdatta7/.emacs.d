@@ -72,7 +72,6 @@ replacing tab with space
 #+END_SRC
 
 * installed packages
-** ido describe binding
 
 ** org bullets
 #+BEGIN_SRC emacs-lisp
