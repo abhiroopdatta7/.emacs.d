@@ -1,3 +1,4 @@
+
 * Emacs Configuration 
   -by A7d
 * package-archives
@@ -8,7 +9,7 @@
 (package-initialize)
 #+END_SRC
 
-* varibales for modes
+* varibles for modes
 ** display & input
 *** description
 
@@ -72,12 +73,63 @@ replacing tab with space
 #+END_SRC
 
 * installed packages
+** ido describe binding
+
+;;** ido grid mode
+;;#+BEGIN_SRC emacs-lisp
+;;(ido-grid-mode 1)
+;;#+END_SRC
 
 ** org bullets
 #+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
+
+;;** ivy + swiper + counsel 
+;;
+;;*** description
+;;    github repo : https://github.com/abo-abo/swiper
+;;    ivy + swiper + counsel in an alternative for isearch, M-x, switech buffer etc.
+;;
+;;    find-file is not bound to counsel-find-file. That behaviour is
+;;    kept to ido-find-file. Reason for that is, search & find
+;;    capability of ido-find-file. e.g. say you type: '.org';
+;;    counsel-find-file will search .org file within the dir but
+;;    ido-find-file will search the database for the same. Similar
+;;    action can be obtained by counsel-locate. I like the ido feature
+;;    of finding file with search if not found in the dir.
+;;
+;;*** codes
+;;#+BEGIN_SRC emacs-lisp
+;;(ivy-mode 1)
+;;(setq ivy-use-virtual-buffers t)
+;;(setq enable-recursive-minibuffers t)
+;;(global-set-key "\C-s" 'swiper)
+;;(global-set-key (kbd "C-c C-r") 'ivy-resume)
+;;(global-set-key (kbd "<f6>") 'ivy-resume)
+;;(global-set-key (kbd "M-x") 'counsel-M-x)
+;;;(global-set-key (kbd "C-x C-f") 'counsel-find-file) ;;; keep IDO mode for find file
+;;(global-set-key (kbd "C-y") 'counsel-yank-pop)
+;;(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+;;(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+;;(global-set-key (kbd "<f1> l") 'counsel-find-library)
+;;(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+;;(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+;;(global-set-key (kbd "C-c g") 'counsel-git)
+;;(global-set-key (kbd "C-c j") 'counsel-git-grep)
+;;(global-set-key (kbd "C-c k") 'counsel-ag)
+;;(global-set-key (kbd "C-x l") 'counsel-locate)
+;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+;;(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+;;
+;;#+END_SRC
+;;
+;;** magit
+;;
+;;#+BEGIN_SRC emacs-lisp
+;;(require 'magit)
+;;#+END_SRC
 
 ** helm
 *** description
@@ -88,6 +140,12 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 (global-set-key [(meta x)] 'helm-M-x)
 (global-set-key [(f7)] 'helm-semantic)
 (global-set-key [(f2)] 'helm-for-files)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(setq helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match    t)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+;; (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 #+END_SRC
 ** cscope + helm-cscope
 *** codes
@@ -122,7 +180,6 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 *** codes
 #+BEGIN_SRC emacs-lisp
 (global-set-key "\C-s" 'swiper-helm)
-
 #+END_SRC
 
 ** perforce (p4)
@@ -136,8 +193,9 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 *** codes
 #+BEGIN_SRC emacs-lisp
 (require 'p4)
-(p4-set-client-name "your-user")
-(p4-set-p4-port "your-port")
+(p4-set-client-name "a7-miata")
+(p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
+;(p4-set-p4-port "ssl:uscal-cm-p4-1:1666")
 ;; -diff
 (defun command-line-diff (switch)
   (let ((file1 (pop command-line-args-left))
@@ -156,24 +214,40 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 #+END_SRC
 
 ** iedit
-
+*** codes
 https://www.emacswiki.org/emacs/Iedit
 
 #+BEGIN_SRC emacs-lisp
 (require 'iedit)
 #+END_SRC
-
-;;** paredit
+** company
+*** codes
+#+BEGIN_SRC emacs-lisp
+(global-company-mode t)
+(add-hook 'after-init-hook 'global-company-mode)
+(setq company-minimum-prefix-length 1)
+(setq company-idle-delay 0)
+#+END_SRC
+** paredit
+*** codes
 ;;#+BEGIN_SRC emacs-lisp
 ;;(require 'paredit)
 ;;(paredit-mode 1)
 ;;#+END_SRC
-
+** stickyfunc-enhance
+*** codes
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+(semantic-mode 1)
+(require 'stickyfunc-enhance)
+#+END_SRC
 * keybindings
 ** codes
 #+BEGIN_SRC emacs-lisp
+(global-set-key ["<f1> k"] 'describe-key)
 (global-set-key [(f6)] 'eshell)
-(global-set-key [(ctrl tab)] 'other-window)
+;(global-set-key ["<ctrl> <tab>"] 'other-window)
+(global-set-key (kbd "<C-tab>") 'other-window)
 (global-set-key (kbd "C-?") 'hippie-expand)
 (global-set-key (kbd "M-D") 'backward-kill-word)
 (global-set-key (kbd "DEL") 'backward-delete-char)
@@ -202,6 +276,14 @@ https://www.emacswiki.org/emacs/Iedit
 
 
 #+END_SRC
+
+* Themes
+;;** exotica
+;;Vibrant colored dark theme.
+;;
+;;#+BEGIN_SRC emacs-lisp
+;;(load-theme 'exotica t)
+;;#+END_SRC
 
 * Back to Basic
 ** key combo
