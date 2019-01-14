@@ -9,7 +9,7 @@
 (package-initialize)
 #+END_SRC
 
-* varibles for modes
+* variables for modes
 ** display & input
 *** description
 
