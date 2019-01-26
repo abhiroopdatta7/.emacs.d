@@ -218,12 +218,12 @@ https://www.emacswiki.org/emacs/Iedit
 #+END_SRC
 
 * Themes
-;;** exotica
-;;Vibrant colored dark theme.
-;;
-;;#+BEGIN_SRC emacs-lisp
+** exotica
+Vibrant colored dark theme.
+
+#+BEGIN_SRC emacs-lisp
 ;;(load-theme 'exotica t)
-;;#+END_SRC
+#+END_SRC
 
 * Back to Basic
 ** key combo
