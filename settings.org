@@ -27,10 +27,10 @@
   #+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
   (when (display-graphic-p)
-    (tool-bar-mode -1) ;;; not using as this is for GUI mode of emacs
-    (scroll-bar-mode -1) ;;; not using as this is for GUI mode of emacs
-    (toggle-frame-maximized) ;;; not using this one any more as each time init.el is eavluated, frame is toggled
-    (display-battery-mode 1) ;;;not using for terminal emacs
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+    (toggle-frame-maximized)
+    (display-battery-mode 1)
   )
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (setq inhibit-splash-screen t)
@@ -62,7 +62,6 @@ replacing tab with space
   #+END_SRC
 
 ** winner mode
-
 *** description
     winner mode for storing the window configurations
     Thanks to: [[https://www.emacswiki.org/emacs/WinnerMode][Emacs Wiki for winner mode]]
@@ -73,13 +72,6 @@ replacing tab with space
 #+END_SRC
 
 * installed packages
-** ido describe binding
-
-** ido grid mode
-;;#+BEGIN_SRC emacs-lisp
-;;(ido-grid-mode 1)
-;;#+END_SRC
-
 ** org bullets
 #+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
@@ -123,12 +115,6 @@ replacing tab with space
 ;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
 ;;(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 ;;
-;;#+END_SRC
-
-** magit
-
-;;#+BEGIN_SRC emacs-lisp
-;;(require 'magit)
 ;;#+END_SRC
 
 ** helm
