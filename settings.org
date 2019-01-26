@@ -27,7 +27,6 @@
   #+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
   (when (display-graphic-p)
-  ;(if (display-graphic-p)
     (tool-bar-mode -1) ;;; not using as this is for GUI mode of emacs
     (scroll-bar-mode -1) ;;; not using as this is for GUI mode of emacs
     (toggle-frame-maximized) ;;; not using this one any more as each time init.el is eavluated, frame is toggled
@@ -76,7 +75,7 @@ replacing tab with space
 * installed packages
 ** ido describe binding
 
-;;** ido grid mode
+** ido grid mode
 ;;#+BEGIN_SRC emacs-lisp
 ;;(ido-grid-mode 1)
 ;;#+END_SRC
@@ -87,21 +86,21 @@ replacing tab with space
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
 
-;;** ivy + swiper + counsel 
-;;
-;;*** description
-;;    github repo : https://github.com/abo-abo/swiper
-;;    ivy + swiper + counsel in an alternative for isearch, M-x, switech buffer etc.
-;;
-;;    find-file is not bound to counsel-find-file. That behaviour is
-;;    kept to ido-find-file. Reason for that is, search & find
-;;    capability of ido-find-file. e.g. say you type: '.org';
-;;    counsel-find-file will search .org file within the dir but
-;;    ido-find-file will search the database for the same. Similar
-;;    action can be obtained by counsel-locate. I like the ido feature
-;;    of finding file with search if not found in the dir.
-;;
-;;*** codes
+** ivy + swiper + counsel 
+
+*** description
+    github repo : https://github.com/abo-abo/swiper
+    ivy + swiper + counsel in an alternative for isearch, M-x, switech buffer etc.
+
+    find-file is not bound to counsel-find-file. That behaviour is
+    kept to ido-find-file. Reason for that is, search & find
+    capability of ido-find-file. e.g. say you type: '.org';
+    counsel-find-file will search .org file within the dir but
+    ido-find-file will search the database for the same. Similar
+    action can be obtained by counsel-locate. I like the ido feature
+    of finding file with search if not found in the dir.
+
+*** codes
 ;;#+BEGIN_SRC emacs-lisp
 ;;(ivy-mode 1)
 ;;(setq ivy-use-virtual-buffers t)
@@ -125,9 +124,9 @@ replacing tab with space
 ;;(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 ;;
 ;;#+END_SRC
-;;
-;;** magit
-;;
+
+** magit
+
 ;;#+BEGIN_SRC emacs-lisp
 ;;(require 'magit)
 ;;#+END_SRC
