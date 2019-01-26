@@ -26,12 +26,13 @@
 
   #+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
+  (when (display-graphic-p)
   ;(if (display-graphic-p)
-    ;(tool-bar-mode -1) ;;; not using as this is for GUI mode of emacs
-    ;(scroll-bar-mode -1) ;;; not using as this is for GUI mode of emacs
-    ;(toggle-frame-maximized) ;;; not using this one any more as each time init.el is eavluated, frame is toggled
-    ;(display-battery-mode 1) ;;;not using for terminal emacs
-  ;)
+    (tool-bar-mode -1) ;;; not using as this is for GUI mode of emacs
+    (scroll-bar-mode -1) ;;; not using as this is for GUI mode of emacs
+    (toggle-frame-maximized) ;;; not using this one any more as each time init.el is eavluated, frame is toggled
+    (display-battery-mode 1) ;;;not using for terminal emacs
+  )
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (setq inhibit-splash-screen t)
   (setq make-backup-files nil)
