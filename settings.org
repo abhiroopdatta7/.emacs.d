@@ -1,6 +1,5 @@
 
-* Emacs Configuration 
-  -by A7d
+*Emacs Configuration* -by A7d
 * package-archives
 ** melpa
 
