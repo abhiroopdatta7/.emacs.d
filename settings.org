@@ -75,7 +75,19 @@ replacing tab with space
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
-
+** ace-window
+*** code
+#+BEGIN_SRC emacs-lisp
+(require 'ace-window)
+(global-set-key (kbd "<f12>") 'ace-window)
+(setq aw-scope 'frame)
+#+END_SRC
+** golden-ratio
+#+BEGIN_SRC emacs-lisp
+(require 'golden-ratio)
+(golden-ratio-mode 1)
+(add-to-list 'golden-ratio-extra-commands 'ace-window) ;; active golden ratio when using ace-window
+#+END_SRC
 ** helm
 *** description
 Helm is an Emacs framework for incremental completions and narrowing selections. It provides an easy-to-use API for developers wishing to build their own Helm applications in Emacs, powerful search tools and dozens of already built-in commands providing completion to almost everything. It is a must-have for anyone using Emacs as a main work environment. Helm has been widely adopted by many Emacs power-users. It is available in Melpa and can be easily installed from the Emacs package manager. 
@@ -90,7 +102,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 (global-set-key [(f2)] 'helm-for-files)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "\C-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-y") 'helm-show-kill-ring)
 (setq helm-buffers-fuzzy-matching t
       helm-recentf-fuzzy-match    t)
 ;; (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
