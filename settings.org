@@ -1,4 +1,3 @@
-
 *Emacs Configuration* -by A7d
 * package-archives
 ** melpa
@@ -83,15 +82,34 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 
 *** codes
 #+BEGIN_SRC emacs-lisp
+(require 'helm)
+(helm-mode 1)
+;(setq helm-split-window-in-side-p nil)
 (global-set-key [(meta x)] 'helm-M-x)
 (global-set-key [(f7)] 'helm-semantic)
 (global-set-key [(f2)] 'helm-for-files)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "\C-y") 'helm-show-kill-ring)
 (setq helm-buffers-fuzzy-matching t
       helm-recentf-fuzzy-match    t)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
 ;; (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
+#+END_SRC
+
+** helm-swoop
+*** codes
+#+BEGIN_SRC emacs-lisp
+(require 'helm-swoop)
+
+(global-set-key (kbd "C-s") 'helm-swoop)
+(global-set-key (kbd "C-M-s") 'helm-multi-swoop-all)
+
+(global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
+(global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
+
+
+(define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+(define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
 #+END_SRC
 ** cscope + helm-cscope
 *** codes
@@ -104,30 +122,12 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 ;; Set key bindings
 (eval-after-load "helm-cscope"
   '(progn
-     (define-key helm-cscope-mode-map (kbd "M-t") 'helm-cscope-find-symbol)
-     (define-key helm-cscope-mode-map (kbd "M-r") 'helm-cscope-find-global-definition)
+     (define-key helm-cscope-mode-map (kbd "M-]") 'helm-cscope-find-global-definition)
+     (define-key helm-cscope-mode-map (kbd "M-t") 'helm-cscope-pop-mark)
+     (define-key helm-cscope-mode-map (kbd "M-s") 'helm-cscope-find-this-symbol)
      (define-key helm-cscope-mode-map (kbd "M-g M-c") 'helm-cscope-find-called-function)
-     (define-key helm-cscope-mode-map (kbd "M-g M-p") 'helm-cscope-find-calling-this-funtcion)
-     (define-key helm-cscope-mode-map (kbd "M-s") 'helm-cscope-select)))
+     (define-key helm-cscope-mode-map (kbd "M-g M-p") 'helm-cscope-find-calling-this-funtcion)))
 #+END_SRC
-** swiper + swiper-helm
-*** description
-    github repo : https://github.com/abo-abo/swiper
-    ivy + swiper + counsel in an alternative for isearch, M-x, switech buffer etc.
-
-    find-file is not bound to counsel-find-file. That behaviour is
-    kept to ido-find-file. Reason for that is, search & find
-    capability of ido-find-file. e.g. say you type: '.org';
-    counsel-find-file will search .org file within the dir but
-    ido-find-file will search the database for the same. Similar
-    action can be obtained by counsel-locate. I like the ido feature
-    of finding file with search if not found in the dir.
-
-*** codes
-#+BEGIN_SRC emacs-lisp
-(global-set-key "\C-s" 'swiper-helm)
-#+END_SRC
-
 ** perforce (p4)
 *** Key combo
  |-----------+---------------------------------|
@@ -199,6 +199,14 @@ https://www.emacswiki.org/emacs/Iedit
 (global-set-key (kbd "<next>") 'end-of-defun)
 (global-set-key [(ctrl n)] 'goto-line)
 
+(global-set-key (kbd "<C-%>") 'match-paren)
+        
+(defun match-paren (arg)
+  "Go to the matching paren if on a paren; otherwise insert %."
+  (interactive "p")
+  (cond ((looking-at "\\s(") (forward-list 1) (backward-char 1))
+  ((looking-at "\\s)") (forward-char 1) (backward-list 1))
+  (t (self-insert-command (or arg 1)))))
 
 ;; Mouse
 (unless (display-graphic-p)
