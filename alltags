@@ -1,0 +1,12 @@
+#!/bin/bash
+rm cscope.files
+for dir in `cat $1`;
+do  find $dir -name *.[ch]pp -print | grep -v boost | grep -v \~ | grep -v \# >> cscope.files;
+    find $dir -name *.[ch] -print | grep -v boost | grep -v \~ | grep -v \# >> cscope.files;
+	find $dir -name *.def -print | grep -v boost | grep -v \~ | grep -v \# >> cscope.files;
+done
+gtags -f cscope.files
+#cat cscope.files | etags -
+#ebrowse --files=cscope.files
+#cat cscope.files | ctags -L - --c++-kinds=+p --fields=+iaS --extra=+q
+cscope -b -q
