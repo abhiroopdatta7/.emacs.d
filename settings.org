@@ -46,7 +46,7 @@
   (size-indication-mode 1)
   (set-language-environment "UTF-8")
   (setq case-fold-search t) ;;I-Search case insensitive
-  #+END_SRC
+  #+End_SRC
 
 ** Indentation
 *** description
@@ -75,6 +75,12 @@ replacing tab with space
 #+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+#+END_SRC
+** auto-hilight-symbol
+*** codes
+#+BEGIN_SRC emacs-lisp
+(require 'auto-highlight-symbol)
+(global-auto-highlight-symbol-mode t)
 #+END_SRC
 ** ace-window
 *** code
@@ -134,7 +140,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 
 (global-set-key (kbd "<f3>") 'helm-swoop)
 (global-set-key (kbd "M-<f3>") 'helm-multi-swoop-all)
-
+(define-key global-map (kbd "C-\\") 'helm-resume)
 (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
 (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
 
