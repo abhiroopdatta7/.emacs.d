@@ -22,7 +22,7 @@
 
 *** codes
 
-  #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
   (when (display-graphic-p)
     (tool-bar-mode -1)
@@ -58,6 +58,40 @@ replacing tab with space
   (setq-default indent-tabs-mode nil)
   (setq tab-width 4) ; or any other preferred value
   (defvaralias 'c-basic-offset 'tab-width)
+  (c-set-offset 'innamespace 0)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(c-basic-offset 4)
+   '(c-comment-only-line-offset 0)
+   '(c-default-style (quote ((c++-mode . "ellemtel") (c-mode . "linux"))))
+   '(c-hanging-braces-alist
+     (quote
+      ((defun-open before after)
+       (defun-close before after)
+       (class-open before after)
+       (block-close . c-snug-do-while)
+       (statement-cont)
+       (substatement-open after)
+       (brace-list-open)
+       (brace-entry-open)
+       (extern-lang-open after)
+       (namespace-open)
+       (namespace-close)
+       (module-open after)
+       (composition-open after)
+       (inexpr-class-open after)
+       (inexpr-class-close before)
+       (arglist-cont-nonempty))))
+   '(c-indent-comments-syntactically-p t)
+   '(c-offsets-alist
+     (quote
+      ((defun-block-intro . +)
+       (func-decl-cont . +)
+       (knr-argdecl-intro . +)
+       (topmost-intro . 0)))))
   #+END_SRC
 
 ** winner mode
@@ -81,6 +115,17 @@ replacing tab with space
 #+BEGIN_SRC emacs-lisp
 (require 'auto-highlight-symbol)
 (global-auto-highlight-symbol-mode t)
+(define-key auto-highlight-symbol-mode-map (kbd "M-p") 'ahs-backward)
+(define-key auto-highlight-symbol-mode-map (kbd "M-n") 'ahs-forward)
+(setq ahs-idle-interval 0) ;; if you want instant highlighting, set it to 0, but I find it annoying
+(setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
+
+;; inhibits highlighting in specific places, like in comments
+(setq ahs-inhibit-face-list '(font-lock-comment-delimiter-face
+                                font-lock-comment-face
+                                font-lock-doc-face
+                                font-lock-doc-string-face
+                                font-lock-string-face))
 #+END_SRC
 ** ace-window
 *** code
@@ -112,7 +157,7 @@ replacing tab with space
 ;;(setq explicit-bash-args '("-c" "export EMACS=; stty echo; bash"))
 ;;(setq comint-process-echoes t)
 #+END_SRC
-** helm
+** helm + helm-swoop
 *** description
 Helm is an Emacs framework for incremental completions and narrowing selections. It provides an easy-to-use API for developers wishing to build their own Helm applications in Emacs, powerful search tools and dozens of already built-in commands providing completion to almost everything. It is a must-have for anyone using Emacs as a main work environment. Helm has been widely adopted by many Emacs power-users. It is available in Melpa and can be easily installed from the Emacs package manager. 
 
@@ -120,34 +165,36 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 #+BEGIN_SRC emacs-lisp
 (require 'helm)
 (helm-mode 1)
-;(setq helm-split-window-in-side-p nil)
 
 (global-set-key [(meta x)] 'helm-M-x)
+
+;; F2 -- Files Menu
+(define-prefix-command 'files-map)
+(global-set-key (kbd "<f2>") 'files-map)
+(define-key files-map [(f2)] 'helm-for-files)
+(define-key files-map [(o)] 'helm-find-files)
+(define-key files-map [(s)] 'save-some-buffers)
+(define-key files-map [(b)] 'helm-buffers-list)
+(define-key files-map [(c)] 'delete-window)
+(define-key files-map [(k)] 'kill-buffer)
+(define-key files-map [(x)] 'save-buffers-kill-terminal)
+
+;; F3 -- Search Menu
+(require 'helm-swoop)
+(define-prefix-command 'search-map)
+(global-set-key (kbd "<f3>") 'search-map)
+(define-key search-map [(f3)] 'helm-swoop)
+(define-key search-map [(a)] 'helm-multi-swoop-all)
+(define-key global-map (kbd "C-\\") 'helm-resume)
+
 (global-set-key [(f7)] 'helm-semantic)
-(global-set-key [(f2)] 'helm-for-files)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x b") 'helm-mini)
+
 (global-set-key (kbd "C-y") 'helm-show-kill-ring)
 (setq helm-buffers-fuzzy-matching t
       helm-recentf-fuzzy-match    t)
-;; (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
+;;(add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 #+END_SRC
 
-** helm-swoop
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'helm-swoop)
-
-(global-set-key (kbd "<f3>") 'helm-swoop)
-(global-set-key (kbd "M-<f3>") 'helm-multi-swoop-all)
-(define-key global-map (kbd "C-\\") 'helm-resume)
-(global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
-(global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
-
-
-(define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-(define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
-#+END_SRC
 ** helm-gtags
 *** codes
 #+BEGIN_SRC emacs-lisp
@@ -160,9 +207,9 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 ;; Set key bindings
 (eval-after-load "helm-gtags"
   '(progn
-     (define-key helm-gtags-mode-map (kbd "M-]") 'helm-gtags-find-tag)
+     (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-find-tag)
+     (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
      (define-key helm-gtags-mode-map (kbd "M-}") 'helm-gtags-find-rtag)
-     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-pop-stack)
      (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
      (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
@@ -172,16 +219,16 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 ** cscope + helm-cscope
 *** codes
 #+BEGIN_SRC emacs-lisp
-;;(require 'xcscope)
-;;(require 'helm-cscope)
+(require 'xcscope)
+(require 'helm-cscope)
 ;; Enable helm-cscope-mode
-;;(add-hook 'c-mode-hook 'helm-cscope-mode)
-;;(add-hook 'c++-mode-hook 'helm-cscope-mode)
+(add-hook 'c-mode-hook 'helm-cscope-mode)
+(add-hook 'c++-mode-hook 'helm-cscope-mode)
 ;; Set key bindings
-;;(eval-after-load "helm-cscope"
-;;  '(progn
-;;     (define-key helm-cscope-mode-map (kbd "M-]") 'helm-cscope-find-global-definition)
-;;     (define-key helm-cscope-mode-map (kbd "M-t") 'helm-cscope-pop-mark)
+(eval-after-load "helm-cscope"
+  '(progn
+     (define-key helm-cscope-mode-map (kbd "M->") 'helm-cscope-find-global-definition)
+     (define-key helm-cscope-mode-map (kbd "M-<") 'helm-cscope-pop-mark)))
 ;;     (define-key helm-cscope-mode-map (kbd "M-s") 'helm-cscope-find-this-symbol)
 ;;     (define-key helm-cscope-mode-map (kbd "M-g M-c") 'helm-cscope-find-called-function)
 ;;     (define-key helm-cscope-mode-map (kbd "M-g M-p") 'helm-cscope-find-calling-this-funtcion)))
@@ -197,6 +244,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 *** codes
 #+BEGIN_SRC emacs-lisp
 (require 'p4)
+(setq p4-global-key-prefix (kbd "<f8>"))
 (p4-set-client-name "a7-miata")
 (p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
 ;(p4-set-p4-port "ssl:uscal-cm-p4-1:1666")
@@ -245,8 +293,8 @@ https://www.emacswiki.org/emacs/Iedit
 (global-set-key (kbd "C-M-z") 'replace-regex)
 (global-set-key (kbd "C-Z") 'count-matches)
 (global-set-key [(ctrl a)] 'back-to-indentation)
-(global-set-key (kbd "<prior>") 'beginning-of-defun)
-(global-set-key (kbd "<next>") 'end-of-defun)
+;;(global-set-key (kbd "<prior>") 'beginning-of-defun)
+;;(global-set-key (kbd "<next>") 'end-of-defun)
 (global-set-key [(ctrl n)] 'goto-line)
 (global-set-key [(ctrl h)] 'highlight-symbol-at-point )
 (global-set-key (kbd "<C-%>") 'match-paren)
