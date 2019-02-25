@@ -106,6 +106,7 @@ replacing tab with space
 
 * installed packages
 ** org bullets
+*** codes
 #+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
@@ -126,6 +127,12 @@ replacing tab with space
                                 font-lock-doc-face
                                 font-lock-doc-string-face
                                 font-lock-string-face))
+#+END_SRC
+** smart-mode-line
+*** codes
+#+BEGIN_SRC emacs-lisp
+(require 'smart-mode-line)
+(setq sml/no-confirm-load-theme t)
 #+END_SRC
 ** ace-window
 *** code
@@ -157,7 +164,7 @@ replacing tab with space
 ;;(setq explicit-bash-args '("-c" "export EMACS=; stty echo; bash"))
 ;;(setq comint-process-echoes t)
 #+END_SRC
-** helm + helm-swoop
+** helm + helm-swoop + helm-ag
 *** description
 Helm is an Emacs framework for incremental completions and narrowing selections. It provides an easy-to-use API for developers wishing to build their own Helm applications in Emacs, powerful search tools and dozens of already built-in commands providing completion to almost everything. It is a must-have for anyone using Emacs as a main work environment. Helm has been widely adopted by many Emacs power-users. It is available in Melpa and can be easily installed from the Emacs package manager. 
 
@@ -181,6 +188,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 
 ;; F3 -- Search Menu
 (require 'helm-swoop)
+(require 'helm-ag)
 (define-prefix-command 'search-map)
 (global-set-key (kbd "<f3>") 'search-map)
 (define-key search-map [(f3)] 'helm-swoop)
