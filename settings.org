@@ -242,6 +242,11 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 ;;     (define-key helm-cscope-mode-map (kbd "M-g M-c") 'helm-cscope-find-called-function)
 ;;     (define-key helm-cscope-mode-map (kbd "M-g M-p") 'helm-cscope-find-calling-this-funtcion)))
 #+END_SRC
+** Magit
+*** code
+#+BEGIN_SRC emacs-lisp
+(require 'magit)
+#+END_SRC
 ** perforce (p4)
 *** Key combo
  |-----------+---------------------------------|
