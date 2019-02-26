@@ -180,6 +180,16 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 (require 'helm-swoop)
 (require 'helm-ag)
 
+(define-transient-command help-command-map()
+  ["=== Help Commands ==="
+   [("m" "man Pages"                               helm-man-woman)
+    ("b" "Display all Keybindings"                 describe-bindings)
+    ("k" "Describe Keybindings"                    describe-key)]
+   [("<f1>" "Cancel"                               transient-quit-one)]])
+
+(global-set-key [(f1)] 'help-command-map)
+
+
 (define-transient-command file-command-map()
   ["=== File Commands ==="
    [("f" "Find File"           helm-for-files)
@@ -187,15 +197,17 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
    [("s" "Save"                save-buffer)]
    [("b" "Show buffers"        helm-buffers-list)]
    [("k" "Kill Buffer"         kill-buffer)
-    ("x" "Exit Emacs"          save-buffers-kill-terminal)]])
+    ("x" "Exit Emacs"          save-buffers-kill-terminal)]
+   [("<f2>" "Cancel"           transient-quit-one)]])
 
 (global-set-key [(f2)] 'file-command-map)
 
 (define-transient-command search-command-map()
   ["=== Search Commands ==="
-   [("f" "Find in File"           helm-swoop)
+   [("f" "Find in File"            helm-swoop)
     ("a"  "Find in All Files"      helm-multi-swoop-all)]
-   [("g"  "Do Grep"                helm-ag)]])
+   [("g"  "Do Grep"                helm-ag)]
+   [("<f3>" "Cancel"               transient-quit-one)]])
 
 (global-set-key [(f3)] 'search-command-map)
 
@@ -296,9 +308,10 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
    [("j" "Show Jobs"                    p4-jobs)
     ("D" "Describe"                     p4-describe)]
    [("i" "Log-In"                       p4-login)
-    ("o" "Log-Out"                      p4-logout)]])
+    ("o" "Log-Out"                      p4-logout)]
+   [("<f4>" "Cancel"                    transient-quit-one)]])
 
-(global-set-key [(f8)] 'perforce-command-map)
+(global-set-key [(f4)] 'perforce-command-map)
 
 #+END_SRC
 
