@@ -327,7 +327,10 @@ https://www.emacswiki.org/emacs/Iedit
   (setq mouse-sel-mode nil)
   )
 
+(global-set-key (kbd "M-<down>") 'move-text-down)
+(global-set-key (kbd "M-<up>") 'move-text-up)
 
+(provide 'key-bindings)
 #+END_SRC
 
 * Themes

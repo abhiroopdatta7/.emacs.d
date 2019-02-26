@@ -56,3 +56,4 @@
    (quote
     (magit stickyfunc-enhance smart-mode-line p4 org-bullets iedit helm-swoop helm-gtags helm-directory helm-cscope helm-ag golden-ratio company-irony auto-highlight-symbol ace-window)))
  '(tab-width 4))
+
