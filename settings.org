@@ -111,6 +111,11 @@ replacing tab with space
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
+** Transient
+*** codes
+#+BEGIN_SRC emacs-lisp
+(require 'transient)
+#+END_SRC
 ** auto-hilight-symbol
 *** codes
 #+BEGIN_SRC emacs-lisp
@@ -172,32 +177,32 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 #+BEGIN_SRC emacs-lisp
 (require 'helm)
 (helm-mode 1)
-
-(global-set-key [(meta x)] 'helm-M-x)
-
-;; F2 -- Files Menu
-(define-prefix-command 'files-map)
-(global-set-key (kbd "<f2>") 'files-map)
-(define-key files-map [(f2)] 'helm-for-files)
-(define-key files-map [(o)] 'helm-find-files)
-(define-key files-map [(s)] 'save-some-buffers)
-(define-key files-map [(b)] 'helm-buffers-list)
-(define-key files-map [(c)] 'delete-window)
-(define-key files-map [(k)] 'kill-buffer)
-(define-key files-map [(x)] 'save-buffers-kill-terminal)
-
-;; F3 -- Search Menu
 (require 'helm-swoop)
 (require 'helm-ag)
-(define-prefix-command 'search-map)
-(global-set-key (kbd "<f3>") 'search-map)
-(define-key search-map [(f3)] 'helm-swoop)
-(define-key search-map [(a)] 'helm-multi-swoop-all)
-(define-key search-map [(g)] 'helm-ag)
+
+(define-transient-command file-command-map()
+  ["=== File Commands ==="
+   [("f" "Find File"           helm-for-files)
+    ("o" "Open File"           helm-find-files)]
+   [("s" "Save"                save-buffer)]
+   [("b" "Show buffers"        helm-buffers-list)]
+   [("k" "Kill Buffer"         kill-buffer)
+    ("x" "Exit Emacs"          save-buffers-kill-terminal)]])
+
+(global-set-key [(f2)] 'file-command-map)
+
+(define-transient-command search-command-map()
+  ["=== Search Commands ==="
+   [("f" "Find in File"           helm-swoop)
+    ("a"  "Find in All Files"      helm-multi-swoop-all)]
+   [("g"  "Do Grep"                helm-ag)]])
+
+(global-set-key [(f3)] 'search-command-map)
+
+
 (define-key global-map (kbd "C-\\") 'helm-resume)
-
+(global-set-key [(meta x)] 'helm-M-x)
 (global-set-key [(f7)] 'helm-semantic)
-
 (global-set-key (kbd "C-y") 'helm-show-kill-ring)
 (setq helm-buffers-fuzzy-matching t
       helm-recentf-fuzzy-match    t)
@@ -246,6 +251,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 *** code
 #+BEGIN_SRC emacs-lisp
 (require 'magit)
+
 #+END_SRC
 ** perforce (p4)
 *** Key combo
@@ -257,7 +263,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 
 *** codes
 #+BEGIN_SRC emacs-lisp
-(setq p4-global-key-prefix (kbd "<f8>"))
+;;(setq p4-global-key-prefix (kbd "<f8>"))
 (require 'p4)
 (p4-set-client-name "a7-miata")
 (p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
@@ -277,6 +283,23 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
         (merg (pop command-line-args-left)))
    (ediff-merge-with-ancestor sccs mine base () merg)))
 (add-to-list 'command-switch-alist '("-merge" . command-line-merge))
+
+(define-transient-command perforce-command-map()
+  ["=== Perforce Commands ==="
+   [("e" "Check-Out"                    p4-edit)
+    ("a" "Mark For Add"                 p4-add)
+    ("d" "Diff"                         p4-diff2)
+    ("r" "Revert"                       p4-revert)]
+   [("b" "Blame"                        p4-blame)
+    ("l" "Blame-Line"                   p4-blame-line)]
+   [("f" "Find In Depot"                p4-depot-find-file)]
+   [("j" "Show Jobs"                    p4-jobs)
+    ("D" "Describe"                     p4-describe)]
+   [("i" "Log-In"                       p4-login)
+    ("o" "Log-Out"                      p4-logout)]])
+
+(global-set-key [(f8)] 'perforce-command-map)
+
 #+END_SRC
 
 ** iedit
@@ -327,16 +350,11 @@ https://www.emacswiki.org/emacs/Iedit
   (setq mouse-sel-mode nil)
   )
 
-(global-set-key (kbd "M-<down>") 'move-text-down)
-(global-set-key (kbd "M-<up>") 'move-text-up)
-
-(provide 'key-bindings)
 #+END_SRC
 
 * Themes
 ** exotica
 Vibrant colored dark theme.
-
 #+BEGIN_SRC emacs-lisp
 ;;(load-theme 'exotica t)
 #+END_SRC
