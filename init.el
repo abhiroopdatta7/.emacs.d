@@ -51,9 +51,9 @@
      (topmost-intro . 0))))
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("bc75dfb513af404a26260b3420d1f3e4131df752c19ab2984a7c85def9a2917e" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
    (quote
-    (magit stickyfunc-enhance smart-mode-line p4 org-bullets iedit helm-swoop helm-gtags helm-directory helm-cscope helm-ag golden-ratio company-irony auto-highlight-symbol ace-window)))
+    (elpy docker helm-tramp smart-mode-line-atom-one-dark-theme atom-one-dark-theme magit stickyfunc-enhance smart-mode-line p4 org-bullets iedit helm-swoop helm-gtags helm-directory helm-cscope helm-ag golden-ratio company-irony auto-highlight-symbol ace-window)))
  '(tab-width 4))
 

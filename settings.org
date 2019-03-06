@@ -1,9 +1,15 @@
 *Emacs Configuration* -by A7d
 * package-archives
 ** melpa
-
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/" ) t)
+#+END_SRC
+** org
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+#+END_SRC
+** package init
+#+BEGIN_SRC emacs-lisp
 (package-initialize)
 #+END_SRC
 
@@ -108,8 +114,8 @@ replacing tab with space
 ** org bullets
 *** codes
 #+BEGIN_SRC emacs-lisp
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+;;(require 'org-bullets)
+;;(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+END_SRC
 ** Transient
 *** codes
@@ -137,7 +143,13 @@ replacing tab with space
 *** codes
 #+BEGIN_SRC emacs-lisp
 (require 'smart-mode-line)
+(setq sml/theme 'atom-one-dark)
 (setq sml/no-confirm-load-theme t)
+(sml/setup)
+#+END_SRC
+** elpy
+#+BEGIN_SRC emacs-lisp
+(elpy-enable)
 #+END_SRC
 ** ace-window
 *** code
@@ -180,6 +192,16 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 (require 'helm-swoop)
 (require 'helm-ag)
 
+(setq
+  helm-recentf-fuzzy-match    t
+  helm-buffers-fuzzy-matching t)
+
+  ;; open helm buffer inside current window, not occupy whole other window
+  (setq helm-split-window-in-side-p t)
+  (setq helm-autoresize-max-height 50)
+  (setq helm-autoresize-min-height 30)
+  (helm-autoresize-mode 1)
+
 (define-transient-command help-command-map()
   ["=== Help Commands ==="
    [("m" "man Pages"                               helm-man-woman)
@@ -215,9 +237,8 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 (define-key global-map (kbd "C-\\") 'helm-resume)
 (global-set-key [(meta x)] 'helm-M-x)
 (global-set-key [(f7)] 'helm-semantic)
-(global-set-key (kbd "C-y") 'helm-show-kill-ring)
-(setq helm-buffers-fuzzy-matching t
-      helm-recentf-fuzzy-match    t)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
 ;;(add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 #+END_SRC
 
@@ -332,7 +353,6 @@ https://www.emacswiki.org/emacs/Iedit
 * keybindings
 ** codes
 #+BEGIN_SRC emacs-lisp
-(global-set-key ["<f1> k"] 'describe-key)
 (global-set-key [(f6)] 'eshell)
 ;(global-set-key ["<ctrl> <tab>"] 'other-window)
 (global-set-key (kbd "<C-tab>") 'other-window)
@@ -366,10 +386,10 @@ https://www.emacswiki.org/emacs/Iedit
 #+END_SRC
 
 * Themes
-** exotica
-Vibrant colored dark theme.
+** atom-one-dark-theme
+An Emacs port of the Atom One Dark theme from Atom.io.
 #+BEGIN_SRC emacs-lisp
-;;(load-theme 'exotica t)
+(load-theme 'atom-one-dark t)
 #+END_SRC
 
 * Back to Basic
