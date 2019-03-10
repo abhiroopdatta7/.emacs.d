@@ -1,461 +1,715 @@
 *Emacs Configuration* -by A7d
+* debug
+#+begin_src emacs-lisp :tangle yes
+(setq debug-on-error t)
+#+end_src
+
 * package-archives
-** melpa
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/" ) t)
-#+END_SRC
-** org
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-#+END_SRC
-** package init
-#+BEGIN_SRC emacs-lisp
-(package-initialize)
-#+END_SRC
+#+begin_src emacs-lisp :tangle yes
+(package-initialize nil)
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
 
-* variables for modes
-** display & input
-*** description
+(package-refresh-contents)
+(setq package-archive-priorities '(("org" . 3)
+                                   ("melpa" . 2)
+                                   ("gnu" . 1)))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(setq use-package-verbose t)
+(eval-when-compile
+  (require 'use-package))
+(use-package diminish :ensure t)
+#+end_src
 
-    Basic display & inputs. Below varibles set:
-- disable menu bar, tool bar, scrool bar, init splash screen
-- display linumber mode, column mode, time, battery life, file size, hilight line, visual line
-- disable backup files
-- save cursor position
-- auto revert file
-- start with maximized frame
-- auto complete parenthesis & hilight parenthesis ends
+* misc
+#+begin_src emacs-lisp :tangle yes 
+(setq save-interprogram-paste-before-kill t)
+(setq ag-highlight-search t)
 
-*** codes
-
-#+BEGIN_SRC emacs-lisp
-  (menu-bar-mode -1)
-  (when (display-graphic-p)
-    (tool-bar-mode -1)
-    (scroll-bar-mode -1)
-    (toggle-frame-maximized)
-    (display-battery-mode 1)
+(when (display-graphic-p)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (toggle-frame-maximized)
+  (display-battery-mode 1)
   )
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (setq inhibit-splash-screen t)
-  (setq make-backup-files nil)
-  ;(global-linum-mode 1)
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (display-time-mode 1)
-  (setq column-number-mode t)
-  (global-hl-line-mode 1)
-  (electric-pair-mode 1)
-  (show-paren-mode 1)
-  (savehist-mode 1)
-  (global-auto-revert-mode 1)
-  (global-visual-line-mode 1)
-  (size-indication-mode 1)
-  (set-language-environment "UTF-8")
-  (setq case-fold-search t) ;;I-Search case insensitive
-  #+End_SRC
+(blink-cursor-mode -1)
 
-** Indentation
-*** description
-Setting tab width to 4
-replacing tab with space
+(use-package undo-tree
+  :ensure t
+  :config
+  (progn
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-timestamps t))
+  :diminish undo-tree-mode)
 
-*** codes
-  #+BEGIN_SRC emacs-lisp  
-  (setq-default indent-tabs-mode nil)
-  (setq tab-width 4) ; or any other preferred value
-  (defvaralias 'c-basic-offset 'tab-width)
-  (c-set-offset 'innamespace 0)
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(c-basic-offset 4)
-   '(c-comment-only-line-offset 0)
-   '(c-default-style (quote ((c++-mode . "ellemtel") (c-mode . "linux"))))
-   '(c-hanging-braces-alist
-     (quote
-      ((defun-open before after)
-       (defun-close before after)
-       (class-open before after)
-       (block-close . c-snug-do-while)
-       (statement-cont)
-       (substatement-open after)
-       (brace-list-open)
-       (brace-entry-open)
-       (extern-lang-open after)
-       (namespace-open)
-       (namespace-close)
-       (module-open after)
-       (composition-open after)
-       (inexpr-class-open after)
-       (inexpr-class-close before)
-       (arglist-cont-nonempty))))
-   '(c-indent-comments-syntactically-p t)
-   '(c-offsets-alist
-     (quote
-      ((defun-block-intro . +)
-       (func-decl-cont . +)
-       (knr-argdecl-intro . +)
-       (topmost-intro . 0)))))
-  #+END_SRC
-
-** winner mode
-*** description
-    winner mode for storing the window configurations
-    Thanks to: [[https://www.emacswiki.org/emacs/WinnerMode][Emacs Wiki for winner mode]]
-
-*** code
-#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (winner-mode 1)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq make-backup-files nil)
+(display-time-mode 1)
+(setq column-number-mode t)
+(global-hl-line-mode 1)
+(electric-pair-mode 1)
+(show-paren-mode 1)
+(savehist-mode 1)
+(global-auto-revert-mode 1)
+(global-visual-line-mode 1)
+(size-indication-mode 1)
+(set-language-environment "UTF-8")
+(setq case-fold-search t) ;;I-Search case insensitive
+(global-linum-mode t)
+(global-unset-key (kbd "C-z"))
+(put 'upcase-region 'disabled nil)
+
+;; goto begin/end if defun
+(global-set-key (kbd "M-<prior>") 'beginning-of-defun)
+(global-set-key (kbd "M-<next>") 'end-of-defun)
+
+(global-set-key (kbd "C-?") 'hippie-expand)
+(use-package ws-butler
+  :ensure t
+  :diminish ws-butler-mode
+  :config
+  (progn
+    (ws-butler-global-mode)
+    (setq ws-butler-keep-whitespace-before-point nil)))
+#+end_src
+
+* transient
+#+begin_src emacs-lisp :tangle yes
+  (use-package transient
+    :ensure t
+  )
+#+end_src
+
+* company
+#+begin_src emacs-lisp :tangle yes
+(use-package company
+  :ensure t
+  :bind ("C-<tab>" . company-complete)
+  :config
+  (company-mode)
+  (global-company-mode t))
+#+end_src
+
+* dired
+#+begin_src emacs-lisp :tangle yes
+(use-package dired
+  :commands dired-mode
+  :bind (:map dired-mode-map ("C-o" . dired-omit-mode))
+  :config
+  (progn
+    (setq dired-dwim-target t)
+    (setq-default dired-omit-mode t)
+    (setq-default dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\.")
+    (define-key dired-mode-map "i" 'dired-subtree-insert)
+    (define-key dired-mode-map ";" 'dired-subtree-remove)))
+(use-package dired-subtree
+  :ensure t
+  :commands (dired-subtree-insert))
+#+end_src
+
+* gui
+#+begin_src emacs-lisp :tangle yes
+  (setq inhibit-splash-screen t)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (column-number-mode t)
+  (use-package all-the-icons
+    :ensure t)
+  (use-package atom-one-dark-theme
+      :ensure t
+      :config
+      (progn
+        (load-theme 'atom-one-dark t)))
+  (use-package smart-mode-line
+    :ensure t)
+  (use-package smart-mode-line-atom-one-dark-theme
+    :after (smart-mode-line)
+    :ensure t
+    :config
+    (progn
+      (setq sml/theme 'atom-one-dark)
+      (setq sml/no-confirm-load-theme t)
+      (sml/setup)))
+  (use-package powerline
+    :disabled
+    :ensure t
+    :init
+    (setq powerline-arrow-shape 'curve)
+    (setq powerline-default-separator-dir '(right . left)))
+#+end_src
+* org
+#+begin_src emacs-lisp :tangle yes
+(use-package org
+  :ensure t
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c l" . org-store-link)
+         ("C-c c" . org-capture)
+         ("C-c a" . org-agenda)
+         ("C-c b" . org-iswitchb)
+         ("C-c C-w" . org-refile)
+         ("C-c j" . org-clock-goto)
+         ("C-c C-x C-o" . org-clock-out))
+  :config
+  (progn
+    ;; The GTD part of this config is heavily inspired by
+    ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
+    (setq org-directory "~/org")
+    (setq org-agenda-files
+          (mapcar (lambda (path) (concat org-directory path))
+                  '("/org.org"
+                    "/gtd/gtd.org"
+                    "/gtd/inbox.org"
+                    "/gtd/tickler.org")))
+    (setq org-log-done 'time)
+    (setq org-src-fontify-natively t)
+    (setq org-use-speed-commands t)
+    (setq org-capture-templates
+          '(("t" "Todo [inbox]" entry
+             (file+headline "~/org/gtd/inbox.org" "Tasks")
+             "* TODO %i%?")
+            ("T" "Tickler" entry
+            (file+headline "~/org/gtd/tickler.org" "Tickler")
+             "* %i%? \n %^t")))
+    (setq org-refile-targets
+          '(("~/org/gtd/gtd.org" :maxlevel . 3)
+            ("~/org/gtd/someday.org" :level . 1)
+            ("~/org/gtd/tickler.org" :maxlevel . 2)))
+    (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+    (setq org-agenda-custom-commands
+          '(("@" "Contexts"
+             ((tags-todo "@email"
+                         ((org-agenda-overriding-header "Emails")))
+              (tags-todo "@phone"
+                         ((org-agenda-overriding-header "Phone")))))))
+    (setq org-clock-persist t)
+    (org-clock-persistence-insinuate)
+    (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))))
+(use-package org-inlinetask
+  :bind (:map org-mode-map
+              ("C-c C-x t" . org-inlinetask-insert-task))
+  :after (org)
+  :commands (org-inlinetask-insert-task))
+(use-package org-bullets
+  :disabled
+  :ensure t
+  :commands (org-bullets-mode)
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+
+* bindings
+#+begin_src emacs-lisp :tangle yes
+(global-set-key (kbd "M-;") 'comment-dwim-line)
+;; expand-region
+(pending-delete-mode t)
+(use-package expand-region
+  :ensure t
+  :commands (er/expand-region
+             er/mark-inside-pairs
+             er/mark-inside-quotes
+             er/mark-outside-pairs
+             er/mark-outside-quotes
+             er/mark-defun
+             er/mark-comment
+             er/mark-text-sentence
+             er/mark-text-paragraph
+             er/mark-word
+             er/mark-url
+             er/mark-email
+             er/mark-symbol))
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x C-r") 'revert-buffer)
+#+end_src
+
+* ace
+#+begin_src emacs-lisp :tangle yes
+(use-package ace-window
+  :ensure t
+  :bind ("<f12>" . ace-window))
+(use-package avy
+  :disabled
+  :ensure avy
+  :bind (("C-b" . avy-goto-char)
+         ("C-o" . avy-goto-word-1)
+         ("C-a" . avy-goto-char-2)
+         ("C-u" . avy-goto-line))
+  :config (setq avy-case-fold-search nil))
+#+end_src
+
+* auctex
+#+begin_src emacs-lisp :tangle yes
+(use-package tex
+  :disabled
+  :ensure auctex
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :config
+  (setq TeX-view-program-list
+        '(("zathura"
+          ("zathura" (mode-io-correlate "-sync.sh")
+           " "
+          (mode-io-correlate "%n:1:%b ")
+           "%o"))))
+  (setq TeX-view-program-selection '((output-pdf "zathura")))
+  (setq TeX-PDF-mode t)
+  (TeX-source-correlate-mode))
+#+end_src
+
+* indentation
+#+begin_src emacs-lisp :tangle yes
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+* lisp
+#+begin_src emacs-lisp :tangle yes
+(use-package lisp-mode
+  :mode "\\.smt2\\'"
+  :init
+  (progn
+    (use-package elisp-slime-nav
+      :diminish elisp-slime-nav-mode
+      :ensure t
+      :commands turn-on-elisp-slime-nav-mode)
+    (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook eval-expression-minibuffer-setup-hook))
+      (add-hook hook 'turn-on-elisp-slime-nav-mode))
+    (use-package eldoc
+      :diminish eldoc-mode
+      :commands turn-on-eldoc-mode
+      :init
+      (progn
+        (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+        (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+        (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)))))
+#+end_src
+
+* flycheck
+#+begin_src emacs-lisp :tangle yes
+  (use-package flycheck
+    :ensure t
+    :commands (flycheck-mode)
+    :config
+    (progn
+      (global-flycheck-mode)
+      (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-gcc flycheck-rtags))
+      (setq flycheck-emacs-lisp-load-path 'inherit)
+      (setq flycheck-verilog-verilator-executable "invoke_verilator.sh"))
+    :init
+      (add-hook 'coq-mode-hook (lambda () (flycheck-mode -1))))
+  (use-package flycheck-package
+    :ensure t)
+#+end_src
+
+* browser
+#+begin_src emacs-lisp :tangle yes
+  (setq browse-url-browser-function 'browse-url-xdg-open)
+#+end_src
+* gdb
+#+begin_src emacs-lisp :tangle yes
+  (setq gdb-many-windows t)
+#+end_src
+* yasnippet
+#+begin_src emacs-lisp :tangle yes
+  (use-package yasnippet
+    :diminish yas-minor-mode
+    :ensure t
+    :config
+    (yas-global-mode t)
+    :init
+    (setq yas-alias-to-yas/prefix-p nil))
+  (use-package yasnippet-snippets
+    :ensure t)
+#+end_src
+
+* symlinks
+#+begin_src emacs-lisp :tangle yes
+  (setq vc-follow-symlinks t)
+#+end_src
+* magit
+#+begin_src emacs-lisp :tangle yes
+  (use-package magit
+    :ensure t
+    :commands magit-status
+    :config
+    (progn
+      (magit-auto-revert-mode 1)
+      (setq magit-completing-read-function 'ivy-completing-read))
+    :init
+    (add-hook 'magit-mode-hook 'magit-load-config-extensions))
+  (use-package magithub
+    :after magit
+    :disabled
+    :ensure t
+    :config (magithub-feature-autoinject t))
+#+end_src
+
+* pkgbuild
+#+begin_src emacs-lisp :tangle yes
+  (use-package pkgbuild-mode
+    :ensure t
+    :mode "/PKGBULD$")
+#+end_src
+
+* ediff
+#+begin_src emacs-lisp :tangle yes
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+#+end_src
+
+* json
+#+begin_src emacs-lisp :tangle yes
+  (use-package json-mode
+    :mode "\\.json\\'"
+    :ensure t)
+#+end_src
+
+* c/c++
+#+begin_src emacs-lisp :tangle yes
+  (use-package cc-mode
+    :mode (("\\.cpp\\'" . c++-mode)
+           ("\\.c\\'" . c-mode))
+    :init
+    (progn
+      (defun remap-fill-paragraph () (define-key c++-mode-map [remap c-fill-paragraph] #'clang-format-buffer))
+      (defun remap-fill-paragraph-c () (define-key c-mode-map [remap c-fill-paragraph] #'clang-format-buffer))
+      (add-hook 'c++-mode-hook 'remap-fill-paragraph)
+      (add-hook 'c-mode-hook 'remap-fill-paragraph-c))
+    :config
+    (progn
+      (setq c-basic-offset 4)))
+  (use-package cc-styles
+    :config
+    (progn
+      (c-set-offset 'inextern-lang 0)))
+  (use-package clang-format
+    :ensure t
+    :commands (clang-format-buffer))
+#+end_src
+
+* rainbow
+  https://github.com/Fanael/rainbow-delimiters
+#+begin_src emacs-lisp :tangle yes
+  (use-package rainbow-delimiters
+    :ensure t
+    :commands rainbow-delimiters-mode
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+* smartparens
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package smartparens-config
+      :ensure smartparens
+      :commands (turn-on-smartparens-strict-mode)
+      :demand t
+      :init
+      (progn
+        (add-hook 'racket-mode-hook #'turn-on-smartparens-strict-mode)
+        (add-hook 'racket-repl-mode-hook #'turn-on-smartparens-strict-mode)
+        (add-hook 'lisp-mode-hook #'turn-on-smartparens-strict-mode)
+        (add-hook 'emacs-lisp-mode-hook #'turn-on-smartparens-strict-mode))
+      :config
+      (progn
+        (setq sp-show-pair-delay 0)
+        (show-smartparens-global-mode t))
+      :bind
+      (:map smartparens-mode-map
+            ("C-M-f" . sp-forward-sexp)
+            ("C-M-b" . sp-backward-sexp)
+
+            ("C-M-d" . sp-down-sexp)
+            ("C-M-e" . sp-up-sexp)
+
+            ("C-M-a" . sp-backward-down-sexp)
+            ("C-M-u" . sp-backward-up-sexp)
+
+            ("C-S-d" . sp-beginning-of-sexp)
+            ("C-S-a" . sp-end-of-sexp)
+
+            ("C-M-n" . sp-next-sexp)
+            ("C-M-p" . sp-previous-sexp)
+
+            ("C-M-k" . sp-kill-sexp)
+            ("C-M-w" . sp-copy-sexp)
+
+            ("M-[" . sp-backward-unwrap-sexp)
+            ("M-]" . sp-unwrap-sexp)
+
+            ("C-)" . sp-forward-slurp-sexp)
+            ("C-(" . sp-forward-barf-sexp)
+            ("C-M-)"  . sp-backward-slurp-sexp)
+            ("C-M-("  . sp-backward-barf-sexp)
+
+            ("M-D" . sp-splice-sexp)
+            ("C-M-<delete>" . sp-spilce-sexp-killing-forward)
+            ("C-M-<backspace>" . sp-splice-sexp-killing-backward)
+            ("C-S-<backspace>" . sp-splice-sexp-killing-around)
+
+            ("C-]" . sp-select-next-thing-exchange)
+            ("C-M-]" . sp-select-next-thing)
+
+            ("M-F" . sp-forward-symbol)
+            ("M-B" . sp-backward-symbol)
+            ("M-q" . sp-indent-defun)
+            ("M-r" . sp-raise-sexp)))
 #+END_SRC
 
-* installed packages
-** org bullets
-*** codes
-#+BEGIN_SRC emacs-lisp
-;;(require 'org-bullets)
-;;(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-#+END_SRC
-** Transient
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'transient)
-#+END_SRC
-** auto-hilight-symbol
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'auto-highlight-symbol)
-(global-auto-highlight-symbol-mode t)
-(define-key auto-highlight-symbol-mode-map (kbd "M-p") 'ahs-backward)
-(define-key auto-highlight-symbol-mode-map (kbd "M-n") 'ahs-forward)
-(setq ahs-idle-interval 0) ;; if you want instant highlighting, set it to 0, but I find it annoying
-(setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
+* spell checking
+#+begin_src emacs-lisp :tangle yes
+  (use-package ispell
+    :config
+    (progn
+      (setq ispell-program-name (executable-find "hunspell"))
+      (setq ispell-dictionary "en_US")
+      (setq ispell-tex-skip-alists
+            (list
+             (append
+              (car ispell-tex-skip-alists)
+              '(("\\\\autocite"   ispell-tex-arg-end)
+                ("\\\\autocites"  ispell-tex-arg-end)))
+             (cadr ispell-tex-skip-alists)))))
+  (use-package flyspell-correct-ivy
+    :ensure t
+    :after flyspell
+    :bind (:map flyspell-mode-map
+                ("C-;" . flyspell-correct-previous-word-generic)))
+  (use-package langtool
+    :ensure t
+    :config
+    (progn
+      (setq langtool-bin "/usr/bin/languagetool")
+      (setq langtool-default-language "en-US")))
+#+end_src
+* docker
+  https://github.com/Silex/docker.el
+#+begin_src emacs-lisp :tangle yes
+  (use-package docker
+  :ensure t)
+#+end_src
+* perforce(p4)
+  https://github.com/gareth-rees/p4.el
+#+begin_src emacs-lisp :tangle yes
+  ;; -diff
+  (defun command-line-diff (switch)
+    (let ((file1 (pop command-line-args-left))
+          (file2 (pop command-line-args-left)))
+      (ediff file1 file2)))
 
-;; inhibits highlighting in specific places, like in comments
-(setq ahs-inhibit-face-list '(font-lock-comment-delimiter-face
+  ;; -merge
+  (defun command-line-merge (switch)
+    (let ((base (pop command-line-args-left))
+          (sccs (pop command-line-args-left))
+          (mine (pop command-line-args-left))
+          (merg (pop command-line-args-left)))
+     (ediff-merge-with-ancestor sccs mine base () merg)))
+
+  (define-transient-command perforce-command-map()
+    ["=== Perforce Commands ==="
+     [("e" "Check-Out"                    p4-edit)
+      ("a" "Mark For Add"                 p4-add)
+      ("d" "Diff"                         p4-diff2)
+      ("r" "Revert"                       p4-revert)]
+     [("b" "Blame"                        p4-blame)
+      ("l" "Blame-Line"                   p4-blame-line)]
+     [("f" "Find In Depot"                p4-depot-find-file)]
+     [("j" "Show Jobs"                    p4-jobs)
+      ("D" "Describe"                     p4-describe)]
+     [("i" "Log-In"                       p4-login)
+      ("o" "Log-Out"                      p4-logout)]
+     [("<f4>" "Cancel"                    transient-quit-one)]])
+
+  (use-package p4
+  :ensure t
+  :after (transient)
+  :config
+  (progn
+    (p4-set-client-name "a7-miata")
+    (p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
+    ;(p4-set-p4-port "ssl:uscal-cm-p4-1:1666")
+    (add-to-list 'command-switch-alist '("-diff" . command-line-diff))
+    (add-to-list 'command-switch-alist '("-merge" . command-line-merge)))
+    (global-set-key [(f4)] 'perforce-command-map))
+#+end_src
+* helm
+  https://github.com/emacs-helm/helm
+  https://github.com/ShingoFukuyama/helm-swoop
+  https://github.com/syohex/emacs-helm-ag
+#+begin_src emacs-lisp :tangle yes
+  (define-transient-command help-command-map()
+    ["=== Help Commands ==="
+     [("m" "man Pages"                               helm-man-woman)
+      ("b" "Display all Keybindings"                 describe-bindings)
+      ("k" "Describe Keybindings"                    describe-key)]
+     [("<f1>" "Cancel"                               transient-quit-one)]])
+
+  (define-transient-command file-command-map()
+    ["=== File Commands ==="
+     [("f" "Find File"           helm-for-files)
+      ("o" "Open File"           helm-find-files)]
+     [("s" "Save"                save-buffer)]
+     [("b" "Show buffers"        helm-buffers-list)]
+     [("k" "Kill Buffer"         kill-buffer)
+      ("x" "Exit Emacs"          save-buffers-kill-terminal)]
+     [("<f2>" "Cancel"           transient-quit-one)]])
+
+  (define-transient-command search-command-map()
+    ["=== Search Commands ==="
+     [("f" "Find in File"            helm-swoop)
+      ("a"  "Find in All Files"      helm-multi-swoop-all)]
+     [("g"  "Do Grep"                helm-ag)]
+     [("n"  "Goto Line"              goto-line)]
+     [("<f3>" "Cancel"               transient-quit-one)]])
+
+  (use-package helm
+  :ensure t
+  :after (transient)
+  :config
+  (progn
+    (helm-mode 1)
+    (setq helm-recentf-fuzzy-match    t)
+    (setq helm-buffers-fuzzy-matching t)
+    (setq helm-split-window-in-side-p t)
+    (setq helm-autoresize-max-height 50)
+    (setq helm-autoresize-min-height 30)
+    (helm-autoresize-mode 1)
+    (global-set-key [(meta x)] 'helm-M-x)
+    (global-set-key [(f7)] 'helm-semantic)
+    (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+    (global-set-key [(f1)] 'help-command-map)
+    (global-set-key [(f2)] 'file-command-map)))
+
+  (use-package helm-swoop
+  :ensure t
+  :after (:all transient helm))
+
+  (use-package helm-ag
+  :ensure t
+  :after (:all transient helm helm-swoop)
+  :config
+  (progn
+    (global-set-key [(f3)] 'search-command-map)
+    (define-key global-map (kbd "C-\\") 'helm-resume)))
+#+end_src
+* smart-mode-line
+  https://github.com/tuhdo/semantic-stickyfunc-enhance
+#+begin_src emacs-lisp :tangle yes
+  (use-package stickyfunc-enhance
+  :ensure t
+  :init (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+  :config
+  (progn
+    (semantic-mode 1)
+    ))
+#+end_src
+* auto-highlight-symbol
+  https://github.com/mhayashi1120/auto-highlight-symbol-mode
+#+begin_src emacs-lisp :tangle yes
+  (use-package auto-highlight-symbol
+  :ensure t
+  :config
+  (progn
+    (global-auto-highlight-symbol-mode t)
+    (define-key auto-highlight-symbol-mode-map (kbd "M-p") 'ahs-backward)
+    (define-key auto-highlight-symbol-mode-map (kbd "M-n") 'ahs-forward)
+    (setq ahs-idle-interval 0) ;; if you want instant highlighting, set it to 0, but I find it annoying
+    (setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
+
+    ;; inhibits highlighting in specific places, like in comments
+    (setq ahs-inhibit-face-list '(font-lock-comment-delimiter-face
                                 font-lock-comment-face
                                 font-lock-doc-face
                                 font-lock-doc-string-face
-                                font-lock-string-face))
-#+END_SRC
-** smart-mode-line
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'smart-mode-line)
-(setq sml/theme 'atom-one-dark)
-(setq sml/no-confirm-load-theme t)
-(sml/setup)
-#+END_SRC
-** elpy
-#+BEGIN_SRC emacs-lisp
-(elpy-enable)
-#+END_SRC
-** ace-window
-*** code
-#+BEGIN_SRC emacs-lisp
-(require 'ace-window)
-(global-set-key (kbd "<f12>") 'ace-window)
-(setq aw-scope 'frame)
-#+END_SRC
-** golden-ratio
-#+BEGIN_SRC emacs-lisp
-(require 'golden-ratio)
-(golden-ratio-mode 1)
-(add-to-list 'golden-ratio-extra-commands 'ace-window) ;; active golden ratio when using ace-window
-#+END_SRC
-** company + company-irony + readline-complete
-*** codes
-#+BEGIN_SRC emacs-lisp
-(global-company-mode t)
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-minimum-prefix-length 1)
-(setq company-idle-delay 0)
+                                font-lock-string-face))))
+#+end_src
+* Mouse
+#+begin_src emacs-lisp :tangle yes
 
-;; company-irony
-;;(eval-after-load 'company
-;;  '(add-to-list 'company-backends 'company-irony))
-
-;;readline-complete
-;;(setq explicit-shell-file-name "bash")
-;;(setq explicit-bash-args '("-c" "export EMACS=; stty echo; bash"))
-;;(setq comint-process-echoes t)
-#+END_SRC
-** helm + helm-swoop + helm-ag
-*** description
-Helm is an Emacs framework for incremental completions and narrowing selections. It provides an easy-to-use API for developers wishing to build their own Helm applications in Emacs, powerful search tools and dozens of already built-in commands providing completion to almost everything. It is a must-have for anyone using Emacs as a main work environment. Helm has been widely adopted by many Emacs power-users. It is available in Melpa and can be easily installed from the Emacs package manager. 
-
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'helm)
-(helm-mode 1)
-(require 'helm-swoop)
-(require 'helm-ag)
-
-(setq
-  helm-recentf-fuzzy-match    t
-  helm-buffers-fuzzy-matching t)
-
-  ;; open helm buffer inside current window, not occupy whole other window
-  (setq helm-split-window-in-side-p t)
-  (setq helm-autoresize-max-height 50)
-  (setq helm-autoresize-min-height 30)
-  (helm-autoresize-mode 1)
-
-(define-transient-command help-command-map()
-  ["=== Help Commands ==="
-   [("m" "man Pages"                               helm-man-woman)
-    ("b" "Display all Keybindings"                 describe-bindings)
-    ("k" "Describe Keybindings"                    describe-key)]
-   [("<f1>" "Cancel"                               transient-quit-one)]])
-
-(global-set-key [(f1)] 'help-command-map)
-
-
-(define-transient-command file-command-map()
-  ["=== File Commands ==="
-   [("f" "Find File"           helm-for-files)
-    ("o" "Open File"           helm-find-files)]
-   [("s" "Save"                save-buffer)]
-   [("b" "Show buffers"        helm-buffers-list)]
-   [("k" "Kill Buffer"         kill-buffer)
-    ("x" "Exit Emacs"          save-buffers-kill-terminal)]
-   [("<f2>" "Cancel"           transient-quit-one)]])
-
-(global-set-key [(f2)] 'file-command-map)
-
-(define-transient-command search-command-map()
-  ["=== Search Commands ==="
-   [("f" "Find in File"            helm-swoop)
-    ("a"  "Find in All Files"      helm-multi-swoop-all)]
-   [("g"  "Do Grep"                helm-ag)]
-   [("<f3>" "Cancel"               transient-quit-one)]])
-
-(global-set-key [(f3)] 'search-command-map)
-
-
-(define-key global-map (kbd "C-\\") 'helm-resume)
-(global-set-key [(meta x)] 'helm-M-x)
-(global-set-key [(f7)] 'helm-semantic)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-;;(add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
-#+END_SRC
-
-** helm-gtags
-*** codes
-#+BEGIN_SRC emacs-lisp
-;; Enable helm-gtags-mode
-(require 'helm-gtags)
-(add-hook 'c-mode-hook 'helm-gtags-mode)
-(add-hook 'c++-mode-hook 'helm-gtags-mode)
-(add-hook 'asm-mode-hook 'helm-gtags-mode)
-
-;; Set key bindings
-(eval-after-load "helm-gtags"
-  '(progn
-     (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-find-tag)
-     (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
-     (define-key helm-gtags-mode-map (kbd "M-}") 'helm-gtags-find-rtag)
-     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
-     (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
-     (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)))
-
-#+END_SRC
-** cscope + helm-cscope
-*** codes
-#+BEGIN_SRC emacs-lisp
-(require 'xcscope)
-(require 'helm-cscope)
-;; Enable helm-cscope-mode
-(add-hook 'c-mode-hook 'helm-cscope-mode)
-(add-hook 'c++-mode-hook 'helm-cscope-mode)
-;; Set key bindings
-(eval-after-load "helm-cscope"
-  '(progn
-     (define-key helm-cscope-mode-map (kbd "M->") 'helm-cscope-find-global-definition)
-     (define-key helm-cscope-mode-map (kbd "M-<") 'helm-cscope-pop-mark)))
-;;     (define-key helm-cscope-mode-map (kbd "M-s") 'helm-cscope-find-this-symbol)
-;;     (define-key helm-cscope-mode-map (kbd "M-g M-c") 'helm-cscope-find-called-function)
-;;     (define-key helm-cscope-mode-map (kbd "M-g M-p") 'helm-cscope-find-calling-this-funtcion)))
-#+END_SRC
-** Magit
-*** code
-#+BEGIN_SRC emacs-lisp
-(require 'magit)
-
-#+END_SRC
-** perforce (p4)
-*** Key combo
- |-----------+---------------------------------|
- | key combo | effect                          |
- |-----------+---------------------------------|
- | C-x p e   | Perforce edit                   |
- |-----------+---------------------------------|
-
-*** codes
-#+BEGIN_SRC emacs-lisp
-;;(setq p4-global-key-prefix (kbd "<f8>"))
-(require 'p4)
-(p4-set-client-name "a7-miata")
-(p4-set-p4-port "ssl:ixin-cm-vmp4proxy:1999")
-;(p4-set-p4-port "ssl:uscal-cm-p4-1:1666")
-;; -diff
-(defun command-line-diff (switch)
-  (let ((file1 (pop command-line-args-left))
-        (file2 (pop command-line-args-left)))
-    (ediff file1 file2)))
-(add-to-list 'command-switch-alist '("-diff" . command-line-diff))
-
-;; -merge
-(defun command-line-merge (switch)
-  (let ((base (pop command-line-args-left))
-        (sccs (pop command-line-args-left))
-        (mine (pop command-line-args-left))
-        (merg (pop command-line-args-left)))
-   (ediff-merge-with-ancestor sccs mine base () merg)))
-(add-to-list 'command-switch-alist '("-merge" . command-line-merge))
-
-(define-transient-command perforce-command-map()
-  ["=== Perforce Commands ==="
-   [("e" "Check-Out"                    p4-edit)
-    ("a" "Mark For Add"                 p4-add)
-    ("d" "Diff"                         p4-diff2)
-    ("r" "Revert"                       p4-revert)]
-   [("b" "Blame"                        p4-blame)
-    ("l" "Blame-Line"                   p4-blame-line)]
-   [("f" "Find In Depot"                p4-depot-find-file)]
-   [("j" "Show Jobs"                    p4-jobs)
-    ("D" "Describe"                     p4-describe)]
-   [("i" "Log-In"                       p4-login)
-    ("o" "Log-Out"                      p4-logout)]
-   [("<f4>" "Cancel"                    transient-quit-one)]])
-
-(global-set-key [(f4)] 'perforce-command-map)
-
-#+END_SRC
-
-** iedit
-*** codes
-https://www.emacswiki.org/emacs/Iedit
-
-#+BEGIN_SRC emacs-lisp
-(require 'iedit)
-#+END_SRC
-** stickyfunc-enhance
-*** codes
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-(semantic-mode 1)
-(require 'stickyfunc-enhance)
-#+END_SRC
-* keybindings
-** codes
-#+BEGIN_SRC emacs-lisp
-(global-set-key [(f6)] 'eshell)
-;(global-set-key ["<ctrl> <tab>"] 'other-window)
-(global-set-key (kbd "<C-tab>") 'other-window)
-(global-set-key (kbd "C-?") 'hippie-expand)
-(global-set-key (kbd "M-D") 'backward-kill-word)
-(global-set-key (kbd "DEL") 'backward-delete-char)
-(global-set-key (kbd "C-z") 'replace-string)
-(global-set-key (kbd "C-M-z") 'replace-regex)
-(global-set-key (kbd "C-Z") 'count-matches)
-(global-set-key [(ctrl a)] 'back-to-indentation)
-;;(global-set-key (kbd "<prior>") 'beginning-of-defun)
-;;(global-set-key (kbd "<next>") 'end-of-defun)
-(global-set-key [(ctrl n)] 'goto-line)
-(global-set-key [(ctrl h)] 'highlight-symbol-at-point )
-(global-set-key (kbd "<C-%>") 'match-paren)
-        
-;; Mouse
-(unless (display-graphic-p)
-  (require 'mouse)
-  (xterm-mouse-mode t)
-  (global-set-key [mouse-4] '(lambda ()
-                              (interactive)
-                              (scroll-down 1)))
-  (global-set-key [mouse-5] '(lambda ()
-                              (interactive)
-                              (scroll-up 1)))
-  (defun track-mouse (e))
-  (setq mouse-sel-mode nil)
+  (unless (display-graphic-p)
+    (require 'mouse)
+    (xterm-mouse-mode t)
+    (global-set-key [mouse-4] '(lambda ()
+                                (interactive)
+                                (scroll-down 1)))
+    (global-set-key [mouse-5] '(lambda ()
+                                (interactive)
+                                (scroll-up 1)))
+    (defun track-mouse (e))
+    (setq mouse-sel-mode nil)
   )
+#+end_src
+* helm-gtags
+#+begin_src emacs-lisp :tangle yes
 
-#+END_SRC
+;; this variables must be set before load helm-gtags
+;; you can change to any prefix key of your choice
+(setq helm-gtags-prefix-key "\C-cg")
 
-* Themes
-** atom-one-dark-theme
-An Emacs port of the Atom One Dark theme from Atom.io.
-#+BEGIN_SRC emacs-lisp
-(load-theme 'atom-one-dark t)
-#+END_SRC
+(use-package helm-gtags
+  :after (helm)
+  :ensure t
+  :init
+  (progn
+    (setq helm-gtags-ignore-case t
+          helm-gtags-auto-update t
+          helm-gtags-use-input-at-cursor t
+          helm-gtags-pulse-at-cursor t
+          helm-gtags-prefix-key "\C-cg"
+          helm-gtags-suggested-key-mapping t)
 
-* Back to Basic
-** key combo
+    ;; Enable helm-gtags-mode in Dired so you can jump to any tag
+    ;; when navigate project tree with Dired
+    (add-hook 'dired-mode-hook 'helm-gtags-mode)
 
-   These are some basic key combo in emacs.
+    ;; Enable helm-gtags-mode in Eshell for the same reason as above
+    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
 
- |-----------+---------------------------------|
- | key combo | effect                          |
- |-----------+---------------------------------|
- | C-f       | forward char                    |
- | C-b       | backward char                   |
- | C-n       | next line                       |
- | C-p       | previous line                   |
- | C-a       | beginging of line               |
- | C-e       | end of line                     |
- | C-x [     | forward one page                |
- | C-x ]     | backward one page               |
- |-----------+---------------------------------|
- | M-f       | forward word                    |
- | M-b       | backward word                   |
- | M-m       | first non whitespace            |
- | M-}       | move beginging of a paragraph   |
- | M-{       | move beginging of a paragraph   |
- | M-a       | move beginging of a sentence    |
- | M-e       | move beginging of a sentence    |
- | M-<       | move to begining of buffer      |
- | M->       | move to end of buffer           |
- |-----------+---------------------------------|
- | C-M-f     | forward s-expression            |
- | C-M-b     | backward s-expression           |
- | C-M-d     | move down to a list             |
- | C-M-u     | move up out of list             |
- | C-M-n     | move to next list               |
- | C-M-p     | move to previous list           |
- | C-M-a     | move to begining of defun       |
- | C-M-e     | move to end of defun            |
- |-----------+---------------------------------|
- | C-v       | scroll down one page            |
- | M-v       | scroll up one page              |
- | C-M-v     | scroll down other window        |
- | C-M-S-v   | scroll up other window          |
- |-----------+---------------------------------|
- | C-x r m   | set a bookmark                  |
- | C-x r l   | list a bookmark                 |
- | C-x r b   | jump to a bookmark              |
- |-----------+---------------------------------|
- | C-x r n   | store number in resistor        |
- | C-x r s   | store region in resistor        |
- | C-x r SPC | store point in resistor         |
- | C-x r +   | increment content in resistor   |
- | C-x r j   | jump to resistor                |
- | C-x r i   | insert content of resistor      |
- | C-x r w   | store window config in resistor |
- | C-x r f   | store frameset in resistor      |
- |-----------+---------------------------------|
- | C-SPC     | mark the region                 |
- | C-u C-SPC | Jump to mark                    |
- | C-x C-x   | exchanges mark & point          |
- |-----------+---------------------------------|
- | M-h       | Mark Next paragraph             |
- | C-x h     | Mark whole buffer               |
- | C-M-h     | mark next defun                 |
- | C-x C-p   | mark next page                  |
- | M-@       | mark next word                  |
- | C-M-@     | mark next s expression          |
- |-----------+---------------------------------|
+    ;; Enable helm-gtags-mode in languages that GNU Global supports
+    (add-hook 'c-mode-hook 'helm-gtags-mode)
+    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+    (add-hook 'java-mode-hook 'helm-gtags-mode)
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
+    ;; key bindings
+    (with-eval-after-load 'helm-gtags
+      (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+      (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+      (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+      (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+      (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))))
 
+(provide 'setup-helm-gtags)
+#+end_src
+* darkroom
+  https://github.com/joaotavora/darkroom
+#+begin_src emacs-lisp :tangle yes
+  (use-package darkroom
+  :disabled
+  :ensure t
+  :config (darkroom-tentative-mode))
+#+end_Src
+* golden-ratio
+  https://github.com/roman/golden-ratio.el
+#+begin_src emacs-lisp :tangle yes
+  (use-package golden-ratio
+  :ensure t
+  :after (ace-window)
+  :config
+  (progn
+    (setq golden-ratio-auto-scale t)
+    (golden-ratio-mode 1)
+    (add-to-list 'golden-ratio-extra-commands 'ace-window)))
+#+end_src
+* neotree
+  https://github.com/jaypei/emacs-neotree
+#+begin_src emacs-lisp :tangle yes
+  (use-package neotree
+  :ensure t
+  :bind ("C-<f12>" . neotree-toggle)
+  :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+#+end_src
