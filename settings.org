@@ -550,7 +550,8 @@
   (define-transient-command file-command-map()
     ["=== File Commands ==="
      [("f" "Find File"           helm-for-files)
-      ("o" "Open File"           helm-find-files)]
+      ("o" "Open File"           helm-find-files)
+      ("t" "Show Tree"           neotree-toggle)]
      [("s" "Save"                save-buffer)]
      [("b" "Show buffers"        helm-buffers-list)]
      [("k" "Kill Buffer"         kill-buffer)
@@ -692,9 +693,9 @@
   https://github.com/joaotavora/darkroom
 #+begin_src emacs-lisp :tangle yes
   (use-package darkroom
-  :disabled
   :ensure t
-  :config (darkroom-tentative-mode))
+  :disabled
+  :bind ("M-<f12>" . darkroom-tentative-mode))
 #+end_Src
 * golden-ratio
   https://github.com/roman/golden-ratio.el
