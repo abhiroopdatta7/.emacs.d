@@ -562,7 +562,10 @@
      [("f" "Find in File"            helm-swoop)
       ("a"  "Find in All Files"      helm-multi-swoop-all)]
      [("g"  "Do Grep"                helm-ag)]
-     [("n"  "Goto Line"              goto-line)]
+     [("n"  "Goto Line"              goto-line)
+      ("b"  "Goto Begin"             beginning-of-buffer)
+      ("e"  "Goto End"               end-of-buffer)]
+     [("m"  "Manage BookMark"        helm-bookmarks)]
      [("<f3>" "Cancel"               transient-quit-one)]])
 
   (use-package helm
