@@ -701,6 +701,7 @@
   https://github.com/roman/golden-ratio.el
 #+begin_src emacs-lisp :tangle yes
   (use-package golden-ratio
+  :disabled
   :ensure t
   :after (ace-window)
   :config
@@ -716,4 +717,12 @@
   :ensure t
   :bind ("C-<f12>" . neotree-toggle)
   :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+#+end_src
+* scons
+  https://github.com/SCons/scons/wiki/IDEIntegration
+#+begin_src emacs-lisp :tangle yes
+ (setq auto-mode-alist
+      (cons '("SConstruct" . python-mode) auto-mode-alist))
+ (setq auto-mode-alist
+      (cons '("SConscript" . python-mode) auto-mode-alist))
 #+end_src
