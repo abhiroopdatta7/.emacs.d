@@ -1,7 +1,7 @@
 *Emacs Configuration* -by A7d
 * debug
 #+begin_src emacs-lisp :tangle yes
-(setq debug-on-error t)
+(setq debug-on-error nil)
 #+end_src
 
 * package-archives
@@ -66,8 +66,8 @@
 (put 'upcase-region 'disabled nil)
 
 ;; goto begin/end if defun
-(global-set-key (kbd "M-<prior>") 'beginning-of-defun)
-(global-set-key (kbd "M-<next>") 'end-of-defun)
+(global-set-key (kbd "S-<up>") 'beginning-of-defun)
+(global-set-key (kbd "S-<down>") 'end-of-defun)
 
 (global-set-key (kbd "C-?") 'hippie-expand)
 (use-package ws-butler
@@ -90,10 +90,11 @@
 #+begin_src emacs-lisp :tangle yes
 (use-package company
   :ensure t
-  :bind ("C-<tab>" . company-complete)
+  :bind ("M-SPC" . company-complete)
   :config
   (company-mode)
-  (global-company-mode t))
+  (global-company-mode t)
+  (add-hook 'after-init-hook 'global-company-mode))
 #+end_src
 
 * dired
@@ -582,6 +583,7 @@
     (setq helm-autoresize-min-height 30)
     (helm-autoresize-mode 1)
     (global-set-key [(meta x)] 'helm-M-x)
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
     (global-set-key [(f7)] 'helm-semantic)
     (global-set-key (kbd "M-y") 'helm-show-kill-ring)
     (global-set-key [(f1)] 'help-command-map)
@@ -589,7 +591,8 @@
 
   (use-package helm-swoop
   :ensure t
-  :after (:all transient helm))
+  :after (:all transient helm)
+  :config (setq helm-swoop-speed-or-color t))
 
   (use-package helm-ag
   :ensure t
@@ -604,11 +607,10 @@
 #+begin_src emacs-lisp :tangle yes
   (use-package stickyfunc-enhance
   :ensure t
-  :init (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-  :config
+  :init
   (progn
-    (semantic-mode 1)
-    ))
+    (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+    (semantic-mode 1)))
 #+end_src
 * auto-highlight-symbol
   https://github.com/mhayashi1120/auto-highlight-symbol-mode
