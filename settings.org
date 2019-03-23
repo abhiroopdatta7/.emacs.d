@@ -65,9 +65,9 @@
 (global-unset-key (kbd "C-z"))
 (put 'upcase-region 'disabled nil)
 
-;; goto begin/end if defun
-(global-set-key (kbd "S-<up>") 'beginning-of-defun)
-(global-set-key (kbd "S-<down>") 'end-of-defun)
+;; goto begin/end if defun(Meta-PageUP/Meta-PageDown)
+(global-set-key (kbd "ESC <prior>") 'beginning-of-defun)
+(global-set-key (kbd "ESC <next>") 'end-of-defun)
 
 (global-set-key (kbd "C-?") 'hippie-expand)
 (use-package ws-butler
@@ -114,6 +114,21 @@
   :commands (dired-subtree-insert))
 #+end_src
 
+* Mouse
+#+begin_src emacs-lisp :tangle yes
+  (unless (display-graphic-p)
+    (require 'mouse)
+    (xterm-mouse-mode t)
+    (global-set-key [mouse-4] '(lambda ()
+                                (interactive)
+                                (scroll-down 1)))
+    (global-set-key [mouse-5] '(lambda ()
+                                (interactive)
+                                (scroll-up 1)))
+    (defun track-mouse (e))
+    (setq mouse-sel-mode nil)
+  )
+#+end_src
 * gui
 #+begin_src emacs-lisp :tangle yes
   (setq inhibit-splash-screen t)
@@ -206,43 +221,48 @@
 
 * bindings
 #+begin_src emacs-lisp :tangle yes
-(global-set-key (kbd "M-;") 'comment-dwim-line)
+  (global-set-key (kbd "M-;") 'comment-dwim-line)
 ;; expand-region
-(pending-delete-mode t)
-(use-package expand-region
-  :ensure t
-  :commands (er/expand-region
-             er/mark-inside-pairs
-             er/mark-inside-quotes
-             er/mark-outside-pairs
-             er/mark-outside-quotes
-             er/mark-defun
-             er/mark-comment
-             er/mark-text-sentence
-             er/mark-text-paragraph
-             er/mark-word
-             er/mark-url
-             er/mark-email
-             er/mark-symbol))
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-x C-r") 'revert-buffer)
+  (pending-delete-mode t)
+  (use-package expand-region
+    :ensure t
+    :commands (er/expand-region
+               er/mark-inside-pairs
+               er/mark-inside-quotes
+               er/mark-outside-pairs
+               er/mark-outside-quotes
+               er/mark-defun
+               er/mark-comment
+               er/mark-text-sentence
+               er/mark-text-paragraph
+               er/mark-word
+               er/mark-url
+               er/mark-email
+               er/mark-symbol))
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key (kbd "C-x C-r") 'revert-buffer)
 #+end_src
 
 * ace
+  https://github.com/abo-abo/ace-window
 #+begin_src emacs-lisp :tangle yes
-(use-package ace-window
-  :ensure t
-  :bind ("<f12>" . ace-window))
-(use-package avy
-  :disabled
-  :ensure avy
-  :bind (("C-b" . avy-goto-char)
-         ("C-o" . avy-goto-word-1)
-         ("C-a" . avy-goto-char-2)
-         ("C-u" . avy-goto-line))
-  :config (setq avy-case-fold-search nil))
+  (use-package ace-window
+    :ensure t
+    :bind ("M-o" . ace-window))
 #+end_src
-
+* golden-ratio
+  https://github.com/roman/golden-ratio.el
+#+begin_src emacs-lisp :tangle yes
+  (use-package golden-ratio
+  :ensure t
+  :disabled
+  :after (ace-window)
+  :config
+  (progn
+    (setq golden-ratio-auto-scale t)
+    (golden-ratio-mode 1)
+    (add-to-list 'golden-ratio-extra-commands 'ace-window)))
+#+end_src
 * auctex
 #+begin_src emacs-lisp :tangle yes
 (use-package tex
@@ -384,6 +404,7 @@
     (progn
       (setq c-basic-offset 4)))
   (use-package cc-styles
+    :disabled
     :config
     (progn
       (c-set-offset 'inextern-lang 0)))
@@ -401,64 +422,6 @@
     :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+end_src
-
-* smartparens
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package smartparens-config
-      :ensure smartparens
-      :commands (turn-on-smartparens-strict-mode)
-      :demand t
-      :init
-      (progn
-        (add-hook 'racket-mode-hook #'turn-on-smartparens-strict-mode)
-        (add-hook 'racket-repl-mode-hook #'turn-on-smartparens-strict-mode)
-        (add-hook 'lisp-mode-hook #'turn-on-smartparens-strict-mode)
-        (add-hook 'emacs-lisp-mode-hook #'turn-on-smartparens-strict-mode))
-      :config
-      (progn
-        (setq sp-show-pair-delay 0)
-        (show-smartparens-global-mode t))
-      :bind
-      (:map smartparens-mode-map
-            ("C-M-f" . sp-forward-sexp)
-            ("C-M-b" . sp-backward-sexp)
-
-            ("C-M-d" . sp-down-sexp)
-            ("C-M-e" . sp-up-sexp)
-
-            ("C-M-a" . sp-backward-down-sexp)
-            ("C-M-u" . sp-backward-up-sexp)
-
-            ("C-S-d" . sp-beginning-of-sexp)
-            ("C-S-a" . sp-end-of-sexp)
-
-            ("C-M-n" . sp-next-sexp)
-            ("C-M-p" . sp-previous-sexp)
-
-            ("C-M-k" . sp-kill-sexp)
-            ("C-M-w" . sp-copy-sexp)
-
-            ("M-[" . sp-backward-unwrap-sexp)
-            ("M-]" . sp-unwrap-sexp)
-
-            ("C-)" . sp-forward-slurp-sexp)
-            ("C-(" . sp-forward-barf-sexp)
-            ("C-M-)"  . sp-backward-slurp-sexp)
-            ("C-M-("  . sp-backward-barf-sexp)
-
-            ("M-D" . sp-splice-sexp)
-            ("C-M-<delete>" . sp-spilce-sexp-killing-forward)
-            ("C-M-<backspace>" . sp-splice-sexp-killing-backward)
-            ("C-S-<backspace>" . sp-splice-sexp-killing-around)
-
-            ("C-]" . sp-select-next-thing-exchange)
-            ("C-M-]" . sp-select-next-thing)
-
-            ("M-F" . sp-forward-symbol)
-            ("M-B" . sp-backward-symbol)
-            ("M-q" . sp-indent-defun)
-            ("M-r" . sp-raise-sexp)))
-#+END_SRC
 
 * spell checking
 #+begin_src emacs-lisp :tangle yes
@@ -632,22 +595,6 @@
                                 font-lock-doc-string-face
                                 font-lock-string-face))))
 #+end_src
-* Mouse
-#+begin_src emacs-lisp :tangle yes
-
-  (unless (display-graphic-p)
-    (require 'mouse)
-    (xterm-mouse-mode t)
-    (global-set-key [mouse-4] '(lambda ()
-                                (interactive)
-                                (scroll-down 1)))
-    (global-set-key [mouse-5] '(lambda ()
-                                (interactive)
-                                (scroll-up 1)))
-    (defun track-mouse (e))
-    (setq mouse-sel-mode nil)
-  )
-#+end_src
 * helm-gtags
 #+begin_src emacs-lisp :tangle yes
 
@@ -699,19 +646,6 @@
   :disabled
   :bind ("M-<f12>" . darkroom-tentative-mode))
 #+end_Src
-* golden-ratio
-  https://github.com/roman/golden-ratio.el
-#+begin_src emacs-lisp :tangle yes
-  (use-package golden-ratio
-  :disabled
-  :ensure t
-  :after (ace-window)
-  :config
-  (progn
-    (setq golden-ratio-auto-scale t)
-    (golden-ratio-mode 1)
-    (add-to-list 'golden-ratio-extra-commands 'ace-window)))
-#+end_src
 * neotree
   https://github.com/jaypei/emacs-neotree
 #+begin_src emacs-lisp :tangle yes
