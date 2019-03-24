@@ -68,6 +68,9 @@
 ;; goto begin/end if defun(Meta-PageUP/Meta-PageDown)
 (global-set-key (kbd "ESC <prior>") 'beginning-of-defun)
 (global-set-key (kbd "ESC <next>") 'end-of-defun)
+(global-set-key (kbd "M-<prior>") 'beginning-of-defun)
+(global-set-key (kbd "M-<next>") 'end-of-defun)
+
 
 (global-set-key (kbd "C-?") 'hippie-expand)
 (use-package ws-butler
@@ -90,11 +93,32 @@
 #+begin_src emacs-lisp :tangle yes
 (use-package company
   :ensure t
-  :bind ("M-SPC" . company-complete)
+  :defer t
+  :init (global-company-mode)
   :config
-  (company-mode)
-  (global-company-mode t)
-  (add-hook 'after-init-hook 'global-company-mode))
+  (progn
+    ;; Use Company for completion
+    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+
+    (setq company-tooltip-align-annotations t
+          ;; Easy navigation to candidates with M-<n>
+          company-show-numbers t)
+    (setq company-dabbrev-downcase nil))
+  :diminish company-mode)
+
+
+(use-package company-quickhelp          ; Documentation popups for Company
+  :ensure t
+  :defer t
+  :init (add-hook 'global-company-mode-hook #'company-quickhelp-mode))
+
+(use-package company-go
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'company-go)))
+
 #+end_src
 
 * dired
@@ -597,10 +621,19 @@
 #+end_src
 * helm-gtags
 #+begin_src emacs-lisp :tangle yes
+  (define-transient-command tags-command-map()
+    ["=== TAGS Commands ==="
+     [("s" "Find Symbol"                  helm-gtags-find-symbol)
+      ("f" "Find Files"                   helm-gtags-find-files)
+      ("r" "Find Reference"               helm-gtags-find-rtag)
+      ("p" "Find Pattern"                 helm-gtags-find-pattern)]
+     [("]" "GOTO Definition/File"         helm-gtags-dwim)
+      ("[" "Pop Stack"                    helm-gtags-pop-stack)]
+     [("<f12>" "Cancel"                   transient-quit-one)]])
 
 ;; this variables must be set before load helm-gtags
 ;; you can change to any prefix key of your choice
-(setq helm-gtags-prefix-key "\C-cg")
+;;(setq helm-gtags-prefix-key "\C-cg")
 
 (use-package helm-gtags
   :after (helm)
@@ -627,10 +660,10 @@
     (add-hook 'java-mode-hook 'helm-gtags-mode)
     (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
+    (global-set-key [(f12)] 'tags-command-map)
+
     ;; key bindings
     (with-eval-after-load 'helm-gtags
-      (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
-      (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
       (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
       (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
       (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
