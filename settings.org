@@ -1,6 +1,7 @@
 *Emacs Configuration* -by A7d
 * debug
 #+begin_src emacs-lisp :tangle yes
+(setq package-check-signature nil)
 (setq debug-on-error nil)
 #+end_src
 
@@ -12,10 +13,11 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 
-(package-refresh-contents)
 (setq package-archive-priorities '(("org" . 3)
                                    ("melpa" . 2)
                                    ("gnu" . 1)))
+;(package-refresh-contents)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -31,8 +33,8 @@
 (setq ag-highlight-search t)
 
 (when (display-graphic-p)
-  (tool-bar-mode -1)
   (scroll-bar-mode -1)
+  (tool-bar-mode -1)
   (toggle-frame-maximized)
   (display-battery-mode 1)
   )
@@ -158,7 +160,6 @@
   (setq inhibit-splash-screen t)
   (menu-bar-mode -1)
   (tool-bar-mode -1)
-  (scroll-bar-mode -1)
   (column-number-mode t)
   (use-package all-the-icons
     :ensure t)
@@ -500,13 +501,15 @@
     ["=== Perforce Commands ==="
      [("e" "Check-Out"                    p4-edit)
       ("a" "Mark For Add"                 p4-add)
-      ("d" "Diff"                         p4-diff2)
+      ("d" "Diff"                         p4-ediff)
       ("r" "Revert"                       p4-revert)]
+     [("C" "Create CL"                    p4-change)
+      ("D" "Describe"                     p4-describe)
+	  ("O" "Show Opened-files"            p4-opened)]
      [("b" "Blame"                        p4-blame)
       ("l" "Blame-Line"                   p4-blame-line)]
      [("f" "Find In Depot"                p4-depot-find-file)]
-     [("j" "Show Jobs"                    p4-jobs)
-      ("D" "Describe"                     p4-describe)]
+
      [("i" "Log-In"                       p4-login)
       ("o" "Log-Out"                      p4-logout)]
      [("<f4>" "Cancel"                    transient-quit-one)]])
@@ -694,4 +697,47 @@
       (cons '("SConstruct" . python-mode) auto-mode-alist))
  (setq auto-mode-alist
       (cons '("SConscript" . python-mode) auto-mode-alist))
+#+end_src
+* Matching Braces
+
+M-C-a jumps to the beginning of the current function.
+M-C-e jumps to the end of the current function
+
+#+begin_src emacs-lisp :tangle yes
+ (global-set-key (kbd "M-%") 'match-paren)
+ (defun match-paren (arg)
+  "Go to the matching paren if on a paren; otherwise insert %."
+  (interactive "p")
+  (cond ((looking-at "\\s(") (forward-list 1) (backward-char 1))
+        ((looking-at "\\s)") (forward-char 1) (backward-list 1))
+        (t (self-insert-command (or arg 1)))))
+#+end_src
+* Window
+#+begin_src emacs-lisp :tangle yes
+ (defun split-windows-horizontally-evenly ()
+  (interactive)
+  (command-execute 'split-window-vertically)
+  (command-execute 'balance-windows)
+)
+
+ (defun split-windows-vertically-evenly ()
+  (interactive)
+  (command-execute 'split-window-horizontally)
+  (command-execute 'balance-windows)
+)
+ (defun delete-window-and-balance()
+  (interactive)
+  (command-execute 'delete-window)
+  (command-execute 'balance-windows)
+)
+
+  (define-transient-command window-command-map()
+    ["=== Window Commands ==="
+     [("v" "Split Vertically"             split-windows-vertically-evenly)
+      ("h" "Split Horizontally"           split-windows-horizontally-evenly)]
+     [("b" "Balance Windows"              balance-windows)
+      ("x" "Close Window"                 delete-window-and-balance)]
+     [("<f5>" "Cancel"                    transient-quit-one)]])
+
+(global-set-key [(f5)] 'window-command-map)
 #+end_src
